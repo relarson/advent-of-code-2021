@@ -4,9 +4,7 @@
 *.dll
 *.so
 *.dylib
-**/day* 
-# dont exclude folders though
-!**/day*/
+bin/*
 
 # Test binary, built with `go test -c`
 *.test
