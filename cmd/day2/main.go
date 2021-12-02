@@ -48,5 +48,37 @@ func problem1() int {
 }
 
 func problem2() int {
-	return -1
+	lines, err := pkg.ReadLines("cmd/day2/input.txt")
+	if err != nil {
+		println(err.Error())
+		return -1
+	}
+
+	depth := 0
+	horiz := 0
+	aim := 0
+
+	for _, line := range lines {
+		components := strings.Split(line, " ")
+		direction := components[0]
+		value, err := strconv.Atoi(components[1])
+		if err != nil {
+			return -1
+		}
+
+		switch direction {
+		case "up":
+			value *= -1
+			fallthrough
+		case "down":
+			aim += value
+		case "forward":
+			horiz += value
+			depth += aim * value
+		default:
+			return -1
+		}
+	}
+
+	return depth * horiz
 }
