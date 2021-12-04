@@ -49,5 +49,51 @@ func problem1() int {
 }
 
 func problem2() int {
-	return -1
+	lines, err := pkg.ReadLines("cmd/day3/input.txt")
+	if err != nil {
+		println(err.Error())
+		return -1
+	}
+	oxgen := lines
+	scrub := lines
+	digits := len(lines[0])
+	for i := 0; i < digits; i++ {
+		if len(oxgen) > 1 {
+			oxgen = filter(oxgen, i, true)
+		}
+		if len(scrub) > 1 {
+			scrub = filter(scrub, i, false)
+		}
+	}
+	// yolo on errors trust the input
+	oxygen, _ := strconv.ParseInt(oxgen[0], 2, 64)
+	scrubber, _ := strconv.ParseInt(scrub[0], 2, 64)
+	return int(oxygen) * int(scrubber)
+}
+
+func filter(values []string, index int, filterToMostCommon bool) []string {
+	var leadOnes []string
+	var leadZeros []string
+
+	for _, value := range values {
+		if value[index] == '1' {
+			leadOnes = append(leadOnes, value)
+		} else {
+			leadZeros = append(leadZeros, value)
+		}
+	}
+
+	if filterToMostCommon {
+		if len(leadOnes) >= len(leadZeros) {
+			return leadOnes
+		} else {
+			return leadZeros
+		}
+	} else {
+		if len(leadZeros) <= len(leadOnes) {
+			return leadZeros
+		} else {
+			return leadOnes
+		}
+	}
 }
