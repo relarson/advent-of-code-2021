@@ -28,18 +28,9 @@ func problem1() int {
 	counts := make(map[int]map[int]int)
 
 	for _, line := range lines {
-		pairs := strings.Split(line, " -> ")
-		pStr := strings.Split(pairs[0], ",")
-		x1, _ := strconv.Atoi(pStr[0])
-		y1, _ := strconv.Atoi(pStr[1])
-		p := Point{x1, y1}
+		p, q := parsePoints(line)
 
-		qStr := strings.Split(pairs[1], ",")
-		x2, _ := strconv.Atoi(qStr[0])
-		y2, _ := strconv.Atoi(qStr[1])
-		q := Point{x2, y2}
-
-		if x1 == x2 || y1 == y2 {
+		if p.x == q.x || p.y == q.y {
 			points := pointsOnLine(p, q)
 			for _, pt := range points {
 				addToMap(&counts, pt)
@@ -57,6 +48,21 @@ func problem2() int {
 		return -1
 	}
 	return len(lines)
+}
+
+func parsePoints(line string) (Point, Point) {
+	pairs := strings.Split(line, " -> ")
+	pStr := strings.Split(pairs[0], ",")
+	x1, _ := strconv.Atoi(pStr[0])
+	y1, _ := strconv.Atoi(pStr[1])
+	p := Point{x1, y1}
+
+	qStr := strings.Split(pairs[1], ",")
+	x2, _ := strconv.Atoi(qStr[0])
+	y2, _ := strconv.Atoi(qStr[1])
+	q := Point{x2, y2}
+
+	return p, q
 }
 
 func pointsOnLine(p Point, q Point) []Point {
