@@ -47,7 +47,19 @@ func problem2() int {
 		println(err.Error())
 		return -1
 	}
-	return len(lines)
+
+	counts := make(map[int]map[int]int)
+
+	for _, line := range lines {
+		p, q := parsePoints(line)
+
+		points := pointsOnLine(p, q)
+		for _, pt := range points {
+			addToMap(&counts, pt)
+		}
+	}
+
+	return countHotSpots(counts)
 }
 
 func parsePoints(line string) (Point, Point) {
