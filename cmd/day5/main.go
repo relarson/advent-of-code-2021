@@ -8,6 +8,11 @@ import (
 	"github.com/relarson/advent-of-code-2021.git/pkg"
 )
 
+type Point struct {
+	x int
+	y int
+}
+
 func main() {
 	fmt.Println("Problem 1: " + strconv.Itoa(problem1()))
 	fmt.Println("Problem 2: " + strconv.Itoa(problem2()))
@@ -24,47 +29,25 @@ func problem1() int {
 
 	for _, line := range lines {
 		pairs := strings.Split(line, " -> ")
-		p := strings.Split(pairs[0], ",")
-		x1, _ := strconv.Atoi(p[0])
-		y1, _ := strconv.Atoi(p[1])
+		pStr := strings.Split(pairs[0], ",")
+		x1, _ := strconv.Atoi(pStr[0])
+		y1, _ := strconv.Atoi(pStr[1])
+		p := Point{x1, y1}
 
-		p = strings.Split(pairs[1], ",")
-		x2, _ := strconv.Atoi(p[0])
-		y2, _ := strconv.Atoi(p[1])
+		qStr := strings.Split(pairs[1], ",")
+		x2, _ := strconv.Atoi(qStr[0])
+		y2, _ := strconv.Atoi(qStr[1])
+		q := Point{x2, y2}
 
-		if x1 == x2 {
-			// vert line
-			if y2 < y1 {
-				tmp := y1
-				y1 = y2
-				y2 = tmp
+		if x1 == x2 || y1 == y2 {
+			points := pointsOnLine(p, q)
+			for _, pt := range points {
+				addToMap(&counts, pt)
 			}
-			//println("Adding vertical in column: ", x1, " starting at ", y1, " and ending at ", y2)
-			for r := y1; r <= y2; r++ {
-				addToMap(&counts, r, x1)
-			}
-			//printMap(counts)
-		} else if y1 == y2 {
-			// ys must be equal since we only have vert or horiz lines
-			// horiz line
-			if x2 < x1 {
-				tmp := x1
-				x1 = x2
-				x2 = tmp
-			}
-			//println("Adding horizontal in row: ", y1, " starting at ", x1, " and ending at ", x2)
-			for c := x1; c <= x2; c++ {
-				addToMap(&counts, y1, c)
-			}
-			//printMap(counts)
-		} else {
-			// ignore diagonals
-			//println("Ignore diagonal " + line)
 		}
 	}
 
 	return countHotSpots(counts)
-
 }
 
 func problem2() int {
@@ -76,7 +59,52 @@ func problem2() int {
 	return len(lines)
 }
 
-func addToMap(counts *map[int]map[int]int, r int, c int) {
+func pointsOnLine(p Point, q Point) []Point {
+	var points []Point
+	if p.x == q.x {
+		// vertical
+		start := p.y
+		end := q.y
+		if start > q.y {
+			start = q.y
+			end = p.y
+		}
+		for y := start; y <= end; y++ {
+			points = append(points, Point{p.x, y})
+		}
+	} else if p.y == q.y {
+		// horizontal
+		start := p.x
+		end := q.x
+		if start > q.x {
+			start = q.x
+			end = p.x
+		}
+		for x := start; x <= end; x++ {
+			points = append(points, Point{x, p.y})
+		}
+	} else {
+		// 45deg diagonal (guaranteed by problem)
+		xDelta := 1
+		if p.x > q.x {
+			xDelta = -1
+		}
+		yDelta := 1
+		if p.y > q.y {
+			yDelta = -1
+		}
+
+		for x, y := p.x, p.y; x != q.x && y != q.y; x, y = x+xDelta, y+yDelta {
+			points = append(points, Point{x, y})
+		}
+		points = append(points, q)
+	}
+	return points
+}
+
+func addToMap(counts *map[int]map[int]int, pt Point) {
+	r := pt.y
+	c := pt.x
 	row, ok := (*counts)[r]
 	if ok {
 		_, ok := row[c]
