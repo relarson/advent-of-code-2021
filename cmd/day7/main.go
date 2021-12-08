@@ -31,26 +31,36 @@ func problem2() int {
 		return -1
 	}
 
-	return calcFuelProgressive(crabs, mean(crabs))
+	floored, ceiled := mean(crabs)
+
+	floorFuel := calcFuelProgressive(crabs, floored)
+	ceilFuel := calcFuelProgressive(crabs, ceiled)
+
+	if floorFuel <= ceilFuel {
+		return floorFuel
+	} else {
+		return ceilFuel
+	}
 }
 
 func median(crabs []int) int {
 	sort.Ints(crabs)
 	count := len(crabs)
 
-	if count%2 == 0 {
+	if count%2 == 1 {
 		return crabs[count/2]
 	} else {
 		return (crabs[(count-1)/2] + crabs[(count+1)/2]) / 2
 	}
 }
 
-func mean(crabs []int) int {
+func mean(crabs []int) (int, int) {
 	sum := 0
 	for _, crab := range crabs {
 		sum += crab
 	}
-	return int(math.Floor(float64(sum) / float64(len(crabs))))
+	mean := float64(sum) / float64(len(crabs))
+	return int(math.Floor(mean)), int(math.Ceil(mean))
 }
 
 func calcFuel(crabs []int, target int) int {
