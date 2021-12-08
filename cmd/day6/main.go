@@ -100,7 +100,6 @@ func calculateFish(toProcess []Fish, days int) int64 {
 			switch t {
 			case 8:
 				popByTimer[t] = spawnAmt // newly spawned
-				break
 			case 6:
 				popByTimer[t] = popByTimer[t+1] + spawnAmt // spawners reset
 			default:
