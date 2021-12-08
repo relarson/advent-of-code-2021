@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"os"
 	"strconv"
+	"strings"
 )
 
 // readLines reads a whole file into memory
@@ -42,4 +43,20 @@ func ReadLinesOfInts(path string) ([]int, error) {
 		lines = append(lines, val)
 	}
 	return lines, scanner.Err()
+}
+
+func ReadCommaDelimInts(path string) ([]int, error) {
+	lines, err := ReadLines(path)
+	if err != nil {
+		return nil, err
+	}
+
+	var vals []int
+
+	stringVals := strings.Split(lines[0], ",")
+	for _, str := range stringVals {
+		val, _ := strconv.Atoi(str)
+		vals = append(vals, val)
+	}
+	return vals, nil
 }
