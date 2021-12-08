@@ -9,8 +9,8 @@ import (
 )
 
 func main() {
-	fmt.Println("Problem 1: " + strconv.Itoa(problem1()))
-	fmt.Println("Problem 2: " + strconv.Itoa(problem2()))
+	fmt.Println("Problem 1: " + strconv.FormatInt(problem1(), 10))
+	fmt.Println("Problem 2: " + strconv.FormatInt(problem2(), 10))
 }
 
 type Fish struct {
@@ -18,7 +18,7 @@ type Fish struct {
 	lifespan      int
 }
 
-func problem1() int {
+func problem1() int64 {
 	lines, err := pkg.ReadLines("cmd/day6/input.txt")
 	if err != nil {
 		println(err.Error())
@@ -34,19 +34,29 @@ func problem1() int {
 		toProcess = append(toProcess, Fish{val, 80})
 	}
 
-	return processFish(toProcess)
+	return calculateFish(toProcess, 80)
 }
 
-func problem2() int {
+func problem2() int64 {
 	lines, err := pkg.ReadLines("cmd/day6/input.txt")
 	if err != nil {
 		println(err.Error())
 		return -1
 	}
 
-	return len(lines)
+	var toProcess []Fish
+
+	fishStr := strings.Split(lines[0], ",")
+	for _, str := range fishStr {
+		val, _ := strconv.Atoi(str)
+		// original fish all get 256d lifespan
+		toProcess = append(toProcess, Fish{val, 256})
+	}
+
+	return calculateFish(toProcess, 256)
 }
 
+/* unused
 func processFish(toProcess []Fish) int {
 	numberOfFish := len(toProcess)
 
@@ -67,6 +77,41 @@ func processFish(toProcess []Fish) int {
 				numberOfFish++
 			}
 		}
+	}
+
+	return numberOfFish
+}
+*/
+
+func calculateFish(toProcess []Fish, days int) int64 {
+	popByTimer := make(map[int]int64, 9)
+
+	for i := 0; i < 9; i++ {
+		popByTimer[i] = 0
+	}
+
+	for _, fish := range toProcess {
+		popByTimer[fish.startingTimer]++
+	}
+
+	for day := 1; day <= days; day++ {
+		spawnAmt := popByTimer[0]
+		for t := 0; t < 9; t++ {
+			switch t {
+			case 8:
+				popByTimer[t] = spawnAmt // newly spawned
+				break
+			case 6:
+				popByTimer[t] = popByTimer[t+1] + spawnAmt // spawners reset
+			default:
+				popByTimer[t] = popByTimer[t+1]
+			}
+		}
+	}
+
+	var numberOfFish int64
+	for i := 0; i < 9; i++ {
+		numberOfFish += popByTimer[i]
 	}
 
 	return numberOfFish
