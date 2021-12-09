@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/relarson/advent-of-code-2021.git/pkg"
 )
@@ -19,7 +20,18 @@ func problem1() int {
 		return -1
 	}
 
-	return len(lines)
+	targetNums := 0
+	for _, line := range lines {
+		_, outputs := parseInputLine(line)
+		for _, output := range outputs {
+			switch len(output) {
+			case 2, 3, 4, 7:
+				targetNums++
+			}
+		}
+	}
+
+	return targetNums
 }
 
 func problem2() int {
@@ -30,4 +42,12 @@ func problem2() int {
 	}
 
 	return len(lines)
+}
+
+func parseInputLine(line string) ([]string, []string) {
+	halves := strings.Split(line, " | ")
+	signals := strings.Split(halves[0], " ")
+	outputs := strings.Split(halves[1], " ")
+
+	return signals, outputs
 }
