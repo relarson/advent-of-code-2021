@@ -60,3 +60,24 @@ func ReadCommaDelimInts(path string) ([]int, error) {
 	}
 	return vals, nil
 }
+
+func ReadIntMatrix(path string, sep string) ([][]int, error) {
+	rows, err := ReadLines(path)
+	if err != nil {
+		return nil, err
+	}
+
+	var matrix [][]int
+
+	for _, row := range rows {
+		digits := strings.Split(row, sep)
+		var digitRow []int
+		for _, digit := range digits {
+			val, _ := strconv.Atoi(digit)
+			digitRow = append(digitRow, val)
+		}
+		matrix = append(matrix, digitRow)
+	}
+
+	return matrix, nil
+}
